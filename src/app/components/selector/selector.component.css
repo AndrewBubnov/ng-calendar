@@ -1,0 +1,14 @@
+p{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.month{
+  margin: 0 2rem;
+  width: 200px;
+  text-align: center;
+}
+i{
+  cursor: pointer;
+}
+

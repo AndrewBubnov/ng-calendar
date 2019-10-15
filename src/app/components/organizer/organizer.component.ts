@@ -11,19 +11,21 @@ import {switchMap} from 'rxjs/operators';
 })
 export class OrganizerComponent implements OnInit {
 
-  form: FormGroup
-  tasks: Task[] = []
+  form: FormGroup;
+  tasks: Task[] = [];
 
   constructor(private dateService: DateService,
               private tasksService: TasksService) {
   }
 
   ngOnInit() {
-    this.dateService.date$.pipe(
-      switchMap(value => this.tasksService.loadTasks(value))
-    ).subscribe(tasks => {
-      this.tasks = tasks
-    })
+      this.dateService.date$.pipe(
+        switchMap(value => this.tasksService.loadTasks(value))
+      )
+        .subscribe(tasks => {
+          this.tasks = tasks
+        },error => this.tasksService.error$.next(error));
+
 
     this.form = new FormGroup({
       title: new FormControl('', Validators.required)
@@ -31,7 +33,7 @@ export class OrganizerComponent implements OnInit {
   }
 
   submit() {
-    const {title} = this.form.value
+    const {title} = this.form.value;
 
     const task: Task = {
       title,
@@ -41,13 +43,13 @@ export class OrganizerComponent implements OnInit {
     this.tasksService.createTask(task).subscribe(task => {
       this.tasks.push(task)
       this.form.reset()
-    }, err => console.error(err))
+    }, err => this.tasksService.error$.next(err))
   }
 
   remove(task: Task) {
     this.tasksService.removeTask(task).subscribe(() => {
       this.tasks = this.tasks.filter(t => t.id !== task.id)
-    }, err => console.error(err))
+    }, err => this.tasksService.error$.next(err))
   }
 
 }

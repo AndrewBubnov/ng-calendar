@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {map, switchMap} from 'rxjs/operators';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {catchError, map, switchMap} from 'rxjs/operators';
+import {BehaviorSubject, Observable, throwError} from 'rxjs';
 import * as moment from 'moment';
 
 export interface Task {
@@ -20,18 +20,21 @@ export class TasksService {
   static url = 'https://ng-calendar-c73fc.firebaseio.com/tasks';
   static indexUrl = 'https://ng-calendar-c73fc.firebaseio.com/index';
   public tasked$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
+  public error$: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
   constructor(private http: HttpClient) {}
 
   loadTasks(date: moment.Moment): Observable<Task[]> {
     return this.http
       .get<Task[]>(`${TasksService.url}/${date.format('DD-MM-YYYY')}.json`)
-      .pipe(map(tasks => {
-        if (!tasks) {
-          return []
-        }
-        return Object.keys(tasks).map(key => ({...tasks[key], id: key}))
-      }))
+      .pipe(
+        map(tasks => {
+          if (!tasks) {
+            return [];
+          }
+          return Object.keys(tasks).map(key => ({...tasks[key], id: key}));
+        })
+      );
   }
 
   createTask(task: Task) {

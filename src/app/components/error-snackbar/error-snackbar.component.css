@@ -1,0 +1,7 @@
+::ng-deep .red-snackbar{
+  background: #e65c5c;
+  color: #fff;
+}
+::ng-deep .red-snackbar button{
+  color: #fff;
+}
